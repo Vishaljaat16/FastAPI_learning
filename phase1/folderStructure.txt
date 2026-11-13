@@ -1,0 +1,132 @@
+invoice_api/
+├── app/
+│   ├── main.py
+│   ├── core/
+│   │   ├── config.py
+│   │   ├── security.py
+│   │   └── exceptions.py
+│   ├── api/
+│   │   ├── router.py
+│   │   └── v1/
+│   │       ├── invoices.py
+│   │       ├── customers.py
+│   │       └── auth.py
+│   ├── schemas/
+│   │   ├── invoice.py
+│   │   ├── customer.py
+│   │   └── auth.py
+│   ├── models/
+│   │   ├── invoice.py
+│   │   ├── invoice_item.py
+│   │   └── customer.py
+│   ├── services/
+│   │   ├── invoice_service.py
+│   │   └── auth_service.py
+│   ├── repositories/
+│   │   ├── invoice_repository.py
+│   │   └── customer_repository.py
+│   └── db/
+│       ├── session.py
+│       └── base.py
+├── alembic/
+├── tests/
+├── .env
+├── alembic.ini
+├── requirements.txt
+└── pyproject.toml
+
+
+
+
+[ Client (Browser/Postman) ]
+            │
+            ▼ (HTTP Request)
+┌────────────────────────────────────────┐
+│  1. ASGI Server (Uvicorn / Hypercorn)  │ <-- Receives raw bytes, builds connection scope
+└────────────────────────────────────────┘
+            │
+            ▼ (ASGI Scope)
+┌────────────────────────────────────────┐
+│  2. Middleware Stack (CORS, Auth, etc) │ <-- Intercepts and processes raw request
+└────────────────────────────────────────┘
+            │
+            ▼
+┌────────────────────────────────────────┐
+│  3. Router & Matcher                   │ <-- Maps HTTP method + path to route handler
+└────────────────────────────────────────┘
+            │
+            ▼
+┌────────────────────────────────────────┐
+│  4. Dependencies & Security (DI)       │ <-- Resolves Depends(), checks tokens
+└────────────────────────────────────────┘
+            │
+            ▼
+┌────────────────────────────────────────┐
+│  5. Parsing & Validation (Pydantic)    │ <-- Validates query, path, and JSON body data
+└────────────────────────────────────────┘
+            │
+            ▼
+┌────────────────────────────────────────┐
+│  6. Route Handler (Your Code)          │ <-- Executes business logic & queries DB
+└────────────────────────────────────────┘
+            │
+            ▼ (Returns Python dict/object/model)
+┌────────────────────────────────────────┐
+│  7. Serialization (Pydantic / JSON)   │ <-- Converts Python objects back to JSON string
+└────────────────────────────────────────┘
+            │
+            ▼
+┌────────────────────────────────────────┐
+│  8. Middleware (Response phase)        │ <-- Modifies headers, logs performance
+└────────────────────────────────────────┘
+            │
+            ▼ (HTTP Response)
+[ Client (Browser/Postman) ]
+
+
+
+
+[ Incoming HTTP Request ]
+          │
+          ▼
+   ┌──────────────┐
+   │   Uvicorn    │  <-- ASGI Server (Manages network sockets & loops)
+   └──────┬───────┘
+          │
+          ▼
+   ┌──────────────┐
+   │  Starlette   │  <-- Web Framework Core (Routing, Middleware, WebSockets)
+   └──────┬───────┘
+          │
+          ▼
+   ┌──────────────┐
+   │   FastAPI    │  <-- Developer Layer (Dependency Injection, OpenAPI)
+   └──────┬───────┘
+          │
+          ▼
+   ┌──────────────┐
+   │   Pydantic   │  <-- Data Layer (Serialization & Type-Hint Validation)
+   └──────────────┘
+
+
+
+
+
+               ┌──────────────────────────────────────┐
+               │         1. API / Router Layer        │
+               │   (Validates HTTP requests/schemas)  │
+               └──────────────────┬───────────────────┘
+                                  │
+                                  ▼
+               ┌──────────────────────────────────────┐
+               │       2. Service / Business Layer    │
+               │  (Calculations, rules, computations) │
+               └──────────────────┬───────────────────┘
+                                  │
+                                  ▼
+               ┌──────────────────────────────────────┐
+               │    3. Repository / Data Access Layer │
+               │   (Database operations, SQL/NoSQL)   │
+               └──────────────────────────────────────┘
+
+
